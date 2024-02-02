@@ -3,7 +3,7 @@
 from fabric.api import *
 import os
 
-env.hosts = ['100.24.240.5', '100.25.33.28']
+env.hosts = ['54.160.101.37', '54.237.32.89']
 env.user = "ubuntu"
 
 
@@ -42,4 +42,4 @@ def do_deploy(archive_path):
         return True
     except Exception as e:
         print("Error during deployment:", str(e))
-        return False
+        return False`
