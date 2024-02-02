@@ -1,63 +1,38 @@
 #!/usr/bin/env bash
-# A Bash script that sets up your web servers for the deployment of web_static
-sudo apt update -y
+# Sets up a web server for deployment of web_static.
 
-# Check if Nginx is installed
-if ! command -v nginx &> /dev/null; then
-    sudo apt-get update
-    sudo apt-get install nginx -y
-fi
+apt-get update
+apt-get install -y nginx
 
-# Create folders
 mkdir -p /data/web_static/releases/test/
 mkdir -p /data/web_static/shared/
+echo "Holberton School" > /data/web_static/releases/test/index.html
+ln -sf /data/web_static/releases/test/ /data/web_static/current
 
-echo "<html>
-  <head>
-  </head>
-  <body>
-    Holberton School
-  </body>
-</html>" | sudo tee /data/web_static/releases/test/index.html > /dev/null
+chown -R ubuntu /data/
+chgrp -R ubuntu /data/
 
-# Delete the symbolic link if it exists
-if [ -L /data/web_static/current ]; then
-    sudo rm /data/web_static/current
-fi
-
-# Create a symbolic link
-sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
-
-# Give ownership to /data
-sudo chown -R ubuntu:ubuntu /data
-
-# Update NGINX configuration
-nginx_config="/etc/nginx/sites-available/default"
-echo "server {
+printf %s "server {
     listen 80 default_server;
     listen [::]:80 default_server;
+    add_header X-Served-By $HOSTNAME;
+    root   /var/www/html;
+    index  index.html index.htm;
 
-    root /var/www/html;
-    index index.html;
+    location /hbnb_static {
+        alias /data/web_static/current;
+        index index.html index.htm;
+    }
 
     location /redirect_me {
-        return 301 https://upschool.com/register;
+        return 301 http://cuberule.com/;
     }
 
     error_page 404 /404.html;
-    location = /404.html {
-        internal;
+    location /404 {
+      root /var/www/html;
+      internal;
     }
+}" > /etc/nginx/sites-available/default
 
-    location / {
-        add_header X-Served-By \$hostname;
-        try_files \$uri \$uri/ =404;
-    }
-
-    location /hbnb_static/ {
-        alias /data/web_static/current/;
-    }
-}" | sudo tee $nginx_config > /dev/null
-
-# Restart NGINX
-sudo service nginx restart
+service nginx restart
