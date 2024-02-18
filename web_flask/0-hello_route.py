@@ -10,7 +10,7 @@ from flask import Flask
 app = Flask(__name__)
 
 
-@app.rout("/", strict_slashes=False)
+@app.route("/", strict_slashes=False)
 def hello_world():
     """ Displays Hello message """
     return "<p>Hello HBNB!</p>"
