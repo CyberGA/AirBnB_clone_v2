@@ -1,0 +1,14 @@
+#!/usr/bin/python3
+from flask import Flask
+""" Flask web app """
+
+app = Flask(__name__)
+
+
+@app.rout("/", strict_slashes=False)
+def hello_world():
+    return "<p>Hello HBNB!</p>"
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0")
