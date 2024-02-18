@@ -28,54 +28,17 @@ app = Flask(__name__)
 app.url_map.strict_slashes = False
 
 
-@app.route("/")
-def hello_world():
-    """ Displays Hello message """
-    return "Hello HBNB!"
-
-
-@app.route("/hbnb")
-def display_hbnb():
-    """ Displays HBNB """
-    return "HBNB"
-
-
-@app.route("/c/<text>")
-def display_c_text(text):
-    """ Displays message with dynamic texr """
-    return f"C {escape(text.replace('_', ' '))}"
-
-
-@app.route("/python/<text>")
-@app.route("/python/")
-def display_python_text(text="is cool"):
-    """ Displays message with dynamic text"""
-    return f"Python {escape(text.replace('_', ' '))}"
-
-
-@app.route("/number/<int:n>")
-def display_if_number(n):
-    """ Displays only number"""
-    return f"{n} is a number"
-
-
-@app.route("/number_template/<int:n>")
-def display_template_number(n):
-    """ Displays only number using a template"""
-    return render_template("5-number.html", n=n)
-
-
-@app.route("/number_odd_or_even/<int:n>")
-def display_number_odd_or_even(n):
-    """ Displays only number using a template"""
-    return render_template("6-number_odd_or_even.html", n=n)
-
-
 @app.route("/states_list")
 def states_list():
     """ Displays a list of state id and name"""
     states = storage.all(State).values()
     return render_template("7-states_list.html", states=states)
+
+
+@app.teardown_appcontext
+def teardown(context):
+    """Remove the current SQLAlchemy session."""
+    storage.close()
 
 
 if __name__ == "__main__":
